@@ -9,15 +9,15 @@
 - Status was set to requested.
 - It is associated with a Patient and HealthcareProfessional.
 - StartDateTime, EndDateTime and RequestedAt were set.
+- The Appointment was associated with the AdministrativeStaff who made the request.
 
 
-## CO2: confirmAppointment()
+## CO2: confirmAppointment(appointmentId)
 
 **Preconditions:** An Appointment with status "requested" exists.
 
 **Postconditions:**
 - Status was changed to "confirmed".
-- The appointment was associated with the AdministrativeStaff who confirmed it.
 
 
 ## CO3: registerArrival(appointmentId)
