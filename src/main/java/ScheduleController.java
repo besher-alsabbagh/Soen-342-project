@@ -2,6 +2,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.io.IOException;
 
 public class ScheduleController {
     private ProfessionalRegistry professionalRegistry;
@@ -29,5 +30,15 @@ public class ScheduleController {
 
         selectedProfessional.addAvailability(startDate, endDate,
                 repetitionPattern, daysOfWeek, startTime, endTime);
+    }
+
+    // return the number of slots imported 
+    public int importFromCSV(String filePath) throws IOException {
+        return new AvailabilityCsvImporter(professionalRegistry).importFrom(filePath);
+    }
+
+    // return the number of slots exported 
+    public int exportToCSV(String filePath) throws IOException {
+        return new AvailabilityCsvExporter(professionalRegistry).exportTo(filePath);
     }
 }
