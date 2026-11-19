@@ -20,4 +20,11 @@ public class AvailabilityBlock {
         this.endDate = endDate;
         this.repetitionPattern = repetitionPattern;
     }
+
+    public DayOfWeek getDayOfWeek() { return dayOfWeek; }
+    public LocalTime getStartTime() { return startTime; }
+    public LocalTime getEndTime() { return endTime; }
+    public LocalDate getStartDate() { return startDate; }
+    public LocalDate getEndDate() { return endDate; }
+    public RepetitionPattern getRepetitionPattern() { return repetitionPattern; }
 }
