@@ -2,6 +2,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Schedule {
@@ -28,5 +29,40 @@ public class Schedule {
 public int getBlockCount() {
     return blocks.size();
 }
+
+    // All slots (booked or not) between startDate and endDate, sorted by date then time
+    public List<TimeSlot> getSlots(String professionalId,
+                                   LocalDate startDate, LocalDate endDate) {
+        List<TimeSlot> slots = new ArrayList<>();
+        for (AvailabilityBlock block : blocks) {
+            slots.addAll(generateSlots(professionalId, block, startDate, endDate));
+        }
+        slots.sort(Comparator.comparing(TimeSlot::getDate)
+                .thenComparing(TimeSlot::getStartTime));
+        return slots;
+    }
+
+    // WEEKLY: every matching day of week in range
+    // MONTHLY: first matching day of week of each month in range
+    private List<TimeSlot> generateSlots(String professionalId, AvailabilityBlock block,
+                                         LocalDate startDate, LocalDate endDate) {
+        List<TimeSlot> slots = new ArrayList<>();
+
+        LocalDate from = startDate.isAfter(block.getStartDate()) ? startDate : block.getStartDate();
+        LocalDate to = endDate.isBefore(block.getEndDate()) ? endDate : block.getEndDate();
+
+        for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
+            if (date.getDayOfWeek() != block.getDayOfWeek()) {
+                continue;
+            }
+            if (block.getRepetitionPattern() == RepetitionPattern.MONTHLY
+                    && date.getDayOfMonth() > 7) {
+                continue;
+            }
+            slots.add(new TimeSlot(professionalId, date,
+                    block.getStartTime(), block.getEndTime()));
+        }
+        return slots;
+    }
 
 }
