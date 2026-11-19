@@ -17,4 +17,8 @@ public void addProfessional(HealthCareProfessional professional) {
     professionals.add(professional);
 }
 
+public List<HealthCareProfessional> getAllProfessionals() {
+        return professionals;
+    }
+
 }
