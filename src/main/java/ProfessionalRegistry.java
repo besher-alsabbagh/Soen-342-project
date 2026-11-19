@@ -1,62 +1,39 @@
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
 
-public class ScheduleController {
-    private ProfessionalRegistry professionalRegistry;
-    private HealthCareProfessional selectedProfessional;
+public class ProfessionalRegistry {
+    private List<HealthCareProfessional> professionals = new ArrayList<>();
 
-    public ScheduleController(ProfessionalRegistry professionalRegistry) {
-        this.professionalRegistry = professionalRegistry;
-    }
-
-    public void selectProfessional(String professionalId) {
-        selectedProfessional = professionalRegistry.findProfessional(professionalId);
-
-        if (selectedProfessional == null) {
-            throw new IllegalArgumentException("Professional not found");
-        }
-    }
-
-    public void makeAvailability(LocalDate startDate, LocalDate endDate,
-                                 RepetitionPattern repetitionPattern,
-                                 List<DayOfWeek> daysOfWeek,
-                                 LocalTime startTime, LocalTime endTime) {
-        if (selectedProfessional == null) {
-            throw new IllegalStateException("No professional selected");
-        }
-
-        selectedProfessional.addAvailability(startDate, endDate,
-                repetitionPattern, daysOfWeek, startTime, endTime);
-    }
-
-    // Pass null for professionalId or specialty to search all
-    public List<TimeSlot> searchAvailability(String professionalId, String specialty,
-                                             LocalDate startDate, LocalDate endDate) {
-        if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("Invalid date range");
-        }
-
-        List<TimeSlot> freeSlots = new ArrayList<>();
-        List<HealthCareProfessional> professionals =
-                professionalRegistry.findProfessionals(professionalId, specialty);
-
+    public HealthCareProfessional findProfessional(String professionalId) {
         for (HealthCareProfessional professional : professionals) {
-            freeSlots.addAll(professional.getFreeSlots(startDate, endDate));
+            if (professionalId.equals(professional.getProfessionalId())) {
+                return professional;
+            }
         }
-        return freeSlots;
+        return null;
     }
 
-    // Returns the number of slots imported
-    public int importFromCSV(String filePath) throws IOException {
-        return new AvailabilityCsvImporter(professionalRegistry).importFrom(filePath);
+    // Pass null for professionalId or specialty to ignore that filter
+    public List<HealthCareProfessional> findProfessionals(String professionalId, String specialty) {
+        List<HealthCareProfessional> result = new ArrayList<>();
+        for (HealthCareProfessional professional : professionals) {
+            boolean idMatches = professionalId == null
+                    || professionalId.equals(professional.getProfessionalId());
+            boolean specialtyMatches = specialty == null
+                    || professional.hasSpecialty(specialty);
+            if (idMatches && specialtyMatches) {
+                result.add(professional);
+            }
+        }
+        return result;
     }
 
-    // Returns the number of slots exported
-    public int exportToCSV(String filePath) throws IOException {
-        return new AvailabilityCsvExporter(professionalRegistry).exportTo(filePath);
+    public void addProfessional(HealthCareProfessional professional) {
+        professionals.add(professional);
+    }
+
+    // Used by the CSV export
+    public List<HealthCareProfessional> getAllProfessionals() {
+        return professionals;
     }
 }
