@@ -3,6 +3,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator;
 
 public class Schedule {
     private List<AvailabilityBlock> blocks = new ArrayList<>();
@@ -28,5 +29,30 @@ public class Schedule {
 public int getBlockCount() {
     return blocks.size();
 }
+    // Every concrete slot of this schedule, sorted by date and time (used by the CSV export).
+    public List<TimeSlot> getAllSlots() {
+        List<TimeSlot> slots = new ArrayList<>();
+        for (AvailabilityBlock block : blocks) {
+            slots.addAll(generateSlots(block, block.getStartDate(), block.getEndDate()));
+        }
+        slots.sort(Comparator.comparing(TimeSlot::getDate).thenComparing(TimeSlot::getStartTime));
+        return slots;
+    }
+
+    private List<TimeSlot> generateSlots(AvailabilityBlock block, LocalDate startDate, LocalDate endDate) {
+        List<TimeSlot> slots = new ArrayList<>();
+        LocalDate first = startDate.isAfter(block.getStartDate()) ? startDate : block.getStartDate();
+        LocalDate last = endDate.isBefore(block.getEndDate()) ? endDate : block.getEndDate();
+        for (LocalDate d = first; !d.isAfter(last); d = d.plusDays(1)) {
+            if (d.getDayOfWeek() != block.getDayOfWeek()) continue;
+            // MONTHLY: only the first occurrence of that weekday in each month
+            boolean occurs = block.getRepetitionPattern() == RepetitionPattern.WEEKLY
+                    || d.getDayOfMonth() <= 7;
+            if (occurs) {
+                slots.add(new TimeSlot(d, block.getStartTime(), block.getEndTime()));
+            }
+        }
+        return slots;
+    }
 
 }
