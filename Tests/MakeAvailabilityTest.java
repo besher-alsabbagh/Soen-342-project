@@ -1,3 +1,5 @@
+// We can delete this test once the CLI is implemented.
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
