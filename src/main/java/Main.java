@@ -26,7 +26,7 @@ public class Main {
         AppointmentController appointmentController =
                 new AppointmentController(patients, professionals, appointments, staff);
 
-        // Make Availability
+        // Make availability
         scheduleController.selectProfessional("P1");
         scheduleController.makeAvailability(
                 LocalDate.of(2026, 11, 1),
@@ -38,7 +38,7 @@ public class Main {
 
         System.out.println("Availability created");
 
-        // Search Availability
+        // Search availability
         List<TimeSlot> freeSlots = scheduleController.searchAvailability(
                 "P1", null,
                 LocalDate.of(2026, 11, 1),
@@ -46,7 +46,7 @@ public class Main {
 
         System.out.println("Available slots: " + freeSlots.size());
 
-        // Book Appointment
+        // Book appointment
         if (!freeSlots.isEmpty()) {
             Optional<Appointment> booking = appointmentController.requestAppointment(
                     "PAT1", "P1", freeSlots.get(0));
