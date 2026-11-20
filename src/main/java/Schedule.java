@@ -19,16 +19,16 @@ public class Schedule {
 
         for (DayOfWeek day : daysOfWeek) {
             AvailabilityBlock block = new AvailabilityBlock(
-                day, startTime, endTime, startDate, endDate, repetitionPattern
+                    day, startTime, endTime, startDate, endDate, repetitionPattern
             );
 
             blocks.add(block);
         }
     }
 
-public int getBlockCount() {
-    return blocks.size();
-}
+    public int getBlockCount() {
+        return blocks.size();
+    }
 
     // All slots (booked or not) between startDate and endDate, sorted by date then time
     public List<TimeSlot> getSlots(String professionalId,
@@ -36,6 +36,18 @@ public int getBlockCount() {
         List<TimeSlot> slots = new ArrayList<>();
         for (AvailabilityBlock block : blocks) {
             slots.addAll(generateSlots(professionalId, block, startDate, endDate));
+        }
+        slots.sort(Comparator.comparing(TimeSlot::getDate)
+                .thenComparing(TimeSlot::getStartTime));
+        return slots;
+    }
+
+    // Every concrete slot of this schedule, sorted by date and time (used by the CSV export)
+    public List<TimeSlot> getAllSlots(String professionalId) {
+        List<TimeSlot> slots = new ArrayList<>();
+        for (AvailabilityBlock block : blocks) {
+            slots.addAll(generateSlots(professionalId, block,
+                    block.getStartDate(), block.getEndDate()));
         }
         slots.sort(Comparator.comparing(TimeSlot::getDate)
                 .thenComparing(TimeSlot::getStartTime));
@@ -64,5 +76,4 @@ public int getBlockCount() {
         }
         return slots;
     }
-
 }

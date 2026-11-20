@@ -13,10 +13,6 @@ public class ProfessionalRegistry {
         return null;
     }
 
-public void addProfessional(HealthCareProfessional professional) {
-    professionals.add(professional);
-}
-
     // Pass null for professionalId or specialty to ignore that filter
     public List<HealthCareProfessional> findProfessionals(String professionalId, String specialty) {
         List<HealthCareProfessional> result = new ArrayList<>();
@@ -32,4 +28,12 @@ public void addProfessional(HealthCareProfessional professional) {
         return result;
     }
 
+    public void addProfessional(HealthCareProfessional professional) {
+        professionals.add(professional);
+    }
+
+    // Used by the CSV export
+    public List<HealthCareProfessional> getAllProfessionals() {
+        return professionals;
+    }
 }
