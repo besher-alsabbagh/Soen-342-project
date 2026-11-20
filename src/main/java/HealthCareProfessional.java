@@ -14,8 +14,14 @@ public class HealthCareProfessional {
     private List<MedicalSpecialty> specialties = new ArrayList<>();
     private List<Appointment> appointments = new ArrayList<>();
 
-        public HealthCareProfessional(String professionalId) {
+    public HealthCareProfessional(String professionalId) {
         this.professionalId = professionalId;
+    }
+
+    public HealthCareProfessional(String professionalId, String name, String professionalType) {
+        this.professionalId = professionalId;
+        this.name = name;
+        this.professionalType = professionalType;
     }
 
     public void addAvailability(LocalDate startDate, LocalDate endDate,
@@ -26,16 +32,37 @@ public class HealthCareProfessional {
                            daysOfWeek, startTime, endTime);
     }
 
+    // Ignores duplicates (case-insensitive)
+    public void addSpecialty(MedicalSpecialty specialty) {
+        for (MedicalSpecialty s : specialties) {
+            if (s.getName().equalsIgnoreCase(specialty.getName())) return;
+        }
+        specialties.add(specialty);
+    }
+
     public String getProfessionalId() {
         return professionalId;
     }
 
-public int getAvailabilityCount() {
-    return schedule.getBlockCount();
-}
+    public String getName() {
+        return name;
+    }
 
-    public void addSpecialty(MedicalSpecialty specialty) {
-        specialties.add(specialty);
+    public String getProfessionalType() {
+        return professionalType;
+    }
+
+    public List<MedicalSpecialty> getSpecialties() {
+        return specialties;
+    }
+
+    public int getAvailabilityCount() {
+        return schedule.getBlockCount();
+    }
+
+    // Every concrete slot of this professional's schedule (used by the CSV export)
+    public List<TimeSlot> getAllSlots() {
+        return schedule.getAllSlots(professionalId);
     }
 
     public boolean hasSpecialty(String specialtyName) {
@@ -69,5 +96,4 @@ public int getAvailabilityCount() {
         }
         return free;
     }
-
 }

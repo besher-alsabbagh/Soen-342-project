@@ -1,15 +1,22 @@
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 
-public class TimeSlot {
-    private String professionalId;
-    private LocalDate date;
-    private LocalTime startTime;
-    private LocalTime endTime;
+public class TimeSlot implements Comparable<TimeSlot> {
+    private final String professionalId;
+    private final LocalDate date;
+    private final LocalTime startTime;
+    private final LocalTime endTime;
 
     public TimeSlot(String professionalId, LocalDate date,
                     LocalTime startTime, LocalTime endTime) {
+        if (date == null || startTime == null || endTime == null) {
+            throw new IllegalArgumentException("Date, start and end time are required");
+        }
+        if (!startTime.isBefore(endTime)) {
+            throw new IllegalArgumentException("Start time must be before end time");
+        }
         this.professionalId = professionalId;
         this.date = date;
         this.startTime = startTime;
@@ -32,8 +39,35 @@ public class TimeSlot {
         return endTime;
     }
 
+    public LocalDateTime getStartDateTime() {
+        return date.atTime(startTime);
+    }
+
+    public LocalDateTime getEndDateTime() {
+        return date.atTime(endTime);
+    }
+
+    /** True if the other slot is on the same day and lies entirely inside this one. */
+    public boolean contains(TimeSlot other) {
+        return date.equals(other.date)
+                && !other.startTime.isBefore(startTime)
+                && !other.endTime.isAfter(endTime);
+    }
+
+    @Override
+    public int compareTo(TimeSlot o) {
+        int c = date.compareTo(o.date);
+        if (c != 0) return c;
+        c = startTime.compareTo(o.startTime);
+        if (c != 0) return c;
+        return endTime.compareTo(o.endTime);
+    }
+
     @Override
     public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
         if (!(o instanceof TimeSlot)) {
             return false;
         }

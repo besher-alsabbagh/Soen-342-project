@@ -3,6 +3,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.IOException;
 
 public class ScheduleController {
     private ProfessionalRegistry professionalRegistry;
@@ -47,5 +48,15 @@ public class ScheduleController {
             freeSlots.addAll(professional.getFreeSlots(startDate, endDate));
         }
         return freeSlots;
+    }
+
+    // Returns the number of slots imported
+    public int importFromCSV(String filePath) throws IOException {
+        return new AvailabilityCsvImporter(professionalRegistry).importFrom(filePath);
+    }
+
+    // Returns the number of slots exported
+    public int exportToCSV(String filePath) throws IOException {
+        return new AvailabilityCsvExporter(professionalRegistry).exportTo(filePath);
     }
 }
